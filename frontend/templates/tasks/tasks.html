@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %} Главная {% endblock %}
+
+{% load static %}
+
+{% load widget_tweaks %}
+
+{% block add_js %} 
+<script>
+    const socket = new WebSocket('ws://127.0.0.1:8000/ws/notifications/');
+
+    socket.onopen = function(e) {
+        console.log("[open] Connection established");
+    };
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        console.log('Message from server ', data.message);
+        new Notification(data.message);
+    };
+
+    socket.onclose = function(event) {
+        if (event.wasClean) {
+            console.log(`[close] Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
+        } else {
+            console.error('[close] Connection died');
+        }
+    };
+
+    socket.onerror = function(error) {
+        console.error(`[error] ${error.message}`);
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (Notification.permission !== 'granted') {
+            document.getElementById('notificationButton').addEventListener('click', function() {
+                Notification.requestPermission().then(function(permission) {
+                    if (permission === 'granted') {
+                        new Notification('Уведомления разрешены!');
+                    }
+                });
+            });
+        }
+    });
+
+</script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="m-1 p-1 w-90 d-flex justify-content-end">
+        <a class="btn btn-primary m-1" href="{% url 'logout-user' %}">Выйти</a>
+        <button id="notificationButton" class="btn btn-danger m-1">Разрешить уведомления</button>
+    </div>
+
+    <div class="container m-2 p-2">
+        <h2>Задачник IOSH</h2>
+
+        <form id="task-form" method="post" hx-post="{% url 'home' %}" hx-target="#last-created" hx-swap="beforeend">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="original_message">Введите задачу:</label>
+                {% render_field form.original_message id="original_message" type="text" name="original_message" required="True" class="form-control" %}
+            </div>
+            <button type="submit" class="btn btn-primary m-1">Добавить задачу</button>
+        </form>        
+        
+        <hr>
+
+        <h3>Созданная задача:</h3>
+        <div id="last-created">
+            
+        </div>
+
+        <hr>
+
+        <h3>Последние задачи:</h3>
+
+        <input type="radio" class="btn-check" name="options" id="option1" autocomplete="off" hx-get="{% url 'list_tasks' %}" hx-vals='{"period": "day"}' hx-target="#tasks-list" hx-trigger="click">
+        <label class="btn btn-primary" for="option1">В этот день</label>
+
+        <input type="radio" class="btn-check" name="options" id="option2" autocomplete="off" checked hx-get="{% url 'list_tasks' %}" hx-vals='{"period": "week"}'  hx-target="#tasks-list" hx-trigger="click">
+        <label class="btn btn-primary" for="option2">На этой недели</label>
+
+        <input type="radio" class="btn-check" name="options" id="option3" autocomplete="off" hx-get="{% url 'list_tasks' %}" hx-vals='{"period": "month"}'  hx-target="#tasks-list" hx-trigger="click">
+        <label class="btn btn-primary" for="option3">В этом месяце</label>
+
+        <input type="radio" class="btn-check" name="options" id="option4" autocomplete="off" hx-get="{% url 'list_tasks' %}" hx-vals='{"period": "year"}'  hx-target="#tasks-list" hx-trigger="click">
+        <label class="btn btn-primary" for="option4">В этом году</label>
+
+        <div id="tasks-list" hx-get="{% url 'list_tasks' %}" hx-trigger="load">
+            <!-- Здесь будут загружаться задачи -->
+        </div>
+
+    </div>
+{% endblock %}

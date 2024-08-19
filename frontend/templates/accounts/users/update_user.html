@@ -1,0 +1,28 @@
+
+{% extends "base.html" %}
+
+{% block title %} Update {{user.name}} {{user.surname}} {% endblock %}
+
+{% block content %}
+    <div id="delete-user">
+
+        <div>{{user}}</div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="fields-group">
+
+                <div class="label">{{field.label_tag}}</div>
+
+                <div class="field">{{field}}</div>
+
+            </div>
+            {% endfor %}
+
+            <input type="submit" value="Send">
+        </form>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,14 @@
+<div class="card mt-3">
+    <div class="card-body">
+        <h5 class="card-title">{{ task.name }}</h5>
+        {% if task.description %}
+            <p class="card-text">{{ task.description }}</p>
+        {% endif %}
+        <p class="card-text">
+            <small class="text-muted">Начало: {{ task.start_time|date:"d.m.Y H:i" }}</small><br>
+            {% if task.notification_time %}
+                <small class="text-muted">Напоминание: {{ task.notification_time|date:"d.m.Y H:i" }}</small>
+            {% endif %}
+        </p>
+    </div>
+</div>

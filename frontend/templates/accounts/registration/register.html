@@ -1,0 +1,62 @@
+
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block add_css %} <link rel="stylesheet" type="text/css" href="{% static 'base/css/style.css' %}"> {% endblock %}
+
+{% block title %} Registration User {% endblock %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+<div id="registration-user">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div class="card bg-primary text-white" style="border-radius: 1rem;">
+          <div class="card-body p-5 text-center">
+
+            <form method="post"
+                  class="mb-md-5 mt-md-4 pb-1"
+                  action="{% url 'create-user' %}"
+                  autocomplete="off"> {% csrf_token %}
+
+              <div id="field-form">
+                <h2 class="fw-bold mb-2 text-uppercase">Registration</h2>
+                <p class="text-white-50 mb-5">Please enter your email and password!</p>
+
+                <div class="form-outline form-white">
+                  {% render_field form.email id="email" name="email" placeholder="Email" type="email" required="True" class="form-control form-control-lg" hx-post="../check-email/" hx-trigger="keyup delay:1s" hx-target="#email-error" %}
+                </div>
+                <div><p id="email-error" class="text-start text-danger"></p></div>
+
+                <div class="form-outline form-white">
+                 {% render_field form.password1 hx-post="../check-password/" hx-trigger="keyup delay:1s" hx-target="#password1-error" id="password1" name="password1" placeholder="Password" type="password" autocomplete="current-password" class="form-control form-control-lg" %}
+                </div>
+                <div><p id="password1-error" class="text-start text-danger"></p></div>
+
+                <div class="form-outline form-white">
+                 {% render_field form.password2  hx-post="../check-re-password/" hx-trigger="keyup delay:1s" hx-target="#password2-error" id="password2" name="password2" placeholder="Repeat Password" type="password" autocomplete="current-password" class="form-control form-control-lg" %}
+                </div>
+                <div><p id="password2-error" class="text-start text-danger"></p></div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-6">
+                  <p class="small mb-5 pb-lg-2"><a class="text-white-50"
+                                                   hx-get="{% url 'login-user' %}"
+                                                   hx-target="#registration-user">Do you have an account?</a></p>
+                </div>
+              </div>
+
+              <button class="btn btn-outline-light btn-lg px-5" type="submit">Next</button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

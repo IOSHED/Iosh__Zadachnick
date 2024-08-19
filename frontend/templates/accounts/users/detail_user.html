@@ -1,0 +1,22 @@
+
+{% extends "base.html" %}
+
+{% block title %} {{user.name}} {{user.surname}} {% endblock %}
+
+{% block content %}
+    <div id="detail-user">
+
+        <div>{{user}}</div>
+
+        {% for role in roles %}
+        <div class="fields-group">
+
+            <div class="label">{{role.label_tag}}</div>
+
+            <div class="field">{{role}}</div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+{% endblock %}
